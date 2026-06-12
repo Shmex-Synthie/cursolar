@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ${modulo.titulo})}">
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex align-items-center mb-4 gap-2">
+        <a th:href="@{/instrutor/cursos/{id}(id=${modulo.cursoId})}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <small class="text-muted" th:text="${modulo.cursoTitulo}"></small>
+            <h2 class="mb-0" th:text="${modulo.titulo}">Módulo</h2>
+        </div>
+        <a th:href="@{/instrutor/modulos/{id}/editar(id=${modulo.id})}"
+           class="btn btn-sm btn-outline-primary ms-auto">
+            <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+    </div>
+
+    <p class="text-muted" th:if="${modulo.descricao}" th:text="${modulo.descricao}"></p>
+
+    <div class="row g-4">
+        <!-- Arquivos -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header"><i class="bi bi-paperclip me-1"></i>Materiais do Módulo</div>
+                <div class="card-body">
+                    <form th:action="@{/instrutor/modulos/{id}/upload(id=${modulo.id})}" method="post"
+                          enctype="multipart/form-data" class="mb-3">
+                        <div class="input-group">
+                            <input type="file" name="arquivo" class="form-control" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-upload"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">PDF, vídeo ou imagem — máx. 500 MB</small>
+                    </form>
+
+                    <div th:if="${#lists.isEmpty(arquivos)}" class="text-muted small text-center py-2">
+                        Nenhum arquivo enviado.
+                    </div>
+
+                    <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(arquivos)}">
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center"
+                            th:each="arq : ${arquivos}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi"
+                                   th:classappend="${arq.tipo.name() == 'PDF'} ? 'bi-file-earmark-pdf text-danger'
+                                               : (${arq.tipo.name() == 'VIDEO'} ? 'bi-camera-video text-primary'
+                                               : (${arq.tipo.name() == 'IMAGEM'} ? 'bi-image text-primary'
+                                               : 'bi-file-earmark'))"></i>
+                                <div>
+                                    <div class="small fw-semibold" th:text="${arq.nome}"></div>
+                                    <div class="text-muted" style="font-size:.75rem"
+                                         th:text="${#numbers.formatDecimal(arq.tamanho / 1024.0, 1, 1)} + ' KB'"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <a th:href="@{/arquivos/{id}/download(id=${arq.id})}"
+                                   class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></a>
+                                <form th:action="@{/instrutor/modulos/{mid}/arquivos/{aid}/excluir(mid=${modulo.id},aid=${arq.id})}"
+                                      method="post" onsubmit="return confirm('Excluir arquivo?')">
+                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Atividades -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header"><i class="bi bi-pencil-square me-1"></i>Atividades</div>
+                <div class="card-body">
+                    <form th:action="@{/instrutor/modulos/{id}/atividades/salvar(id=${modulo.id})}" method="post"
+                          th:object="${novaAtividade}" class="mb-3">
+                        <div class="mb-2">
+                            <input type="text" class="form-control form-control-sm" th:field="*{titulo}"
+                                   placeholder="Título da atividade *"
+                                   th:classappend="${#fields.hasErrors('titulo')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{titulo}"></div>
+                        </div>
+                        <div class="mb-2">
+                            <textarea class="form-control form-control-sm" rows="2" th:field="*{descricao}"
+                                      placeholder="Descrição (opcional)"></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <input type="date" class="form-control form-control-sm" th:field="*{prazo}"
+                                   style="max-width:160px;" title="Prazo">
+                            <button class="btn btn-sm btn-primary">
+                                <i class="bi bi-plus-lg me-1"></i>Adicionar
+                            </button>
+                        </div>
+                    </form>
+
+                    <div th:if="${#lists.isEmpty(atividades)}" class="text-muted small text-center py-2">
+                        Nenhuma atividade cadastrada.
+                    </div>
+
+                    <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(atividades)}">
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-start"
+                            th:each="at : ${atividades}">
+                            <div>
+                                <div class="fw-semibold small" th:text="${at.titulo}"></div>
+                                <div class="text-muted" style="font-size:.75rem" th:if="${at.descricao}"
+                                     th:text="${at.descricao}"></div>
+                                <span class="badge bg-verde mt-1" th:if="${at.prazo}"
+                                      th:text="'Prazo: ' + ${#temporals.format(at.prazo, 'dd/MM/yyyy')}"></span>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <a th:href="@{/instrutor/modulos/{mid}/atividades/{aid}/submissoes(mid=${modulo.id},aid=${at.id})}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Ver submissões dos alunos">
+                                    <i class="bi bi-inbox me-1"></i><span th:text="${contagemSubmissoes[at.id]} ?: 0"></span>
+                                </a>
+                                <form th:action="@{/instrutor/modulos/{mid}/atividades/{aid}/excluir(mid=${modulo.id},aid=${at.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('Excluir atividade? As submissões dos alunos também serão removidas.')">
+                                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

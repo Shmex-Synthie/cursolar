@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, 'Módulo')}">
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex align-items-center mb-4 gap-2">
+        <a th:href="@{/instrutor/cursos/{id}(id=${modulo.cursoId})}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <small class="text-muted" th:text="${cursoTitulo}"></small>
+            <h2 class="mb-0" th:text="${modulo.id == null} ? 'Novo Módulo' : 'Editar Módulo'">Módulo</h2>
+        </div>
+    </div>
+
+    <div class="card shadow-sm" style="max-width: 560px;">
+        <div class="card-body">
+            <form th:action="@{/instrutor/modulos/salvar}" th:object="${modulo}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{cursoId}">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Título *</label>
+                    <input type="text" class="form-control" th:field="*{titulo}"
+                           th:classappend="${#fields.hasErrors('titulo')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{titulo}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Descrição</label>
+                    <textarea class="form-control" rows="3" th:field="*{descricao}"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Ordem</label>
+                    <input type="number" class="form-control" th:field="*{ordem}" min="1" style="max-width:100px;">
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-floppy me-1"></i>Salvar
+                    </button>
+                    <a th:href="@{/instrutor/cursos/{id}(id=${modulo.cursoId})}"
+                       class="btn btn-outline-primary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

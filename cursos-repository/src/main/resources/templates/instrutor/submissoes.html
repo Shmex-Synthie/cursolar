@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, 'Submissões')}">
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex align-items-center mb-4 gap-2">
+        <a th:href="@{/instrutor/modulos/{id}(id=${modulo.id})}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <small class="text-muted">
+                <span th:text="${modulo.cursoTitulo}"></span> &rsaquo;
+                <span th:text="${modulo.titulo}"></span>
+            </small>
+            <h2 class="mb-0">
+                <i class="bi bi-inbox me-2 text-primary"></i>
+                Submissões — <span th:text="${atividade.titulo}"></span>
+            </h2>
+        </div>
+    </div>
+
+    <div class="d-flex gap-3 mb-4">
+        <span class="badge bg-verde" th:if="${atividade.prazo}"
+              th:text="'Prazo: ' + ${#temporals.format(atividade.prazo, 'dd/MM/yyyy')}"></span>
+        <span class="badge bg-light text-dark border"
+              th:text="${#lists.size(submissoes)} + ' submissão(ões) recebida(s)'"></span>
+    </div>
+
+    <p class="text-muted" th:if="${atividade.descricao}" th:text="${atividade.descricao}"></p>
+
+    <div th:if="${#lists.isEmpty(submissoes)}" class="text-center text-muted py-5">
+        <i class="bi bi-inbox display-4"></i>
+        <p class="mt-2">Nenhum aluno enviou resposta para esta atividade ainda.</p>
+    </div>
+
+    <div class="table-responsive" th:unless="${#lists.isEmpty(submissoes)}">
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="table-light">
+                <tr>
+                    <th>Aluno</th>
+                    <th>Arquivo</th>
+                    <th>Comentário</th>
+                    <th>Enviado em</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="sub : ${submissoes}">
+                    <td>
+                        <i class="bi bi-person me-1 text-primary"></i>
+                        <span th:text="${sub.alunoNome}"></span>
+                    </td>
+                    <td>
+                        <span class="small" th:text="${sub.arquivoNome} ?: '-'"></span>
+                        <span class="text-muted small" th:if="${sub.arquivoTamanho != null}"
+                              th:text="'(' + ${#numbers.formatDecimal(sub.arquivoTamanho / 1024.0, 1, 1)} + ' KB)'"></span>
+                    </td>
+                    <td class="text-muted small fst-italic"
+                        th:text="${#strings.abbreviate(sub.comentario ?: '-', 60)}"></td>
+                    <td class="text-muted small"
+                        th:text="${#temporals.format(sub.enviadoEm, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td class="text-end">
+                        <a th:if="${sub.arquivoId != null}"
+                           th:href="@{/arquivos/{id}/download(id=${sub.arquivoId})}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download me-1"></i>Baixar
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* ============================================
+   Tema verde/branco — CursoLar
+   ============================================ */
+
+:root {
+    --verde-900: #1b4332;
+    --verde-700: #2d6a4f;
+    --verde-500: #40916c;
+    --verde-300: #74c69d;
+    --verde-100: #d8f3dc;
+    --verde-50:  #f1f8f4;
+}
+
+body {
+    background-color: var(--verde-50);
+}
+
+/* Navbar */
+.navbar-verde {
+    background-color: var(--verde-900);
+}
+
+/* Botões primários em verde */
+.btn-primary {
+    --bs-btn-bg: var(--verde-700);
+    --bs-btn-border-color: var(--verde-700);
+    --bs-btn-hover-bg: var(--verde-900);
+    --bs-btn-hover-border-color: var(--verde-900);
+    --bs-btn-active-bg: var(--verde-900);
+    --bs-btn-active-border-color: var(--verde-900);
+    --bs-btn-disabled-bg: var(--verde-500);
+    --bs-btn-disabled-border-color: var(--verde-500);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--verde-700);
+    --bs-btn-border-color: var(--verde-700);
+    --bs-btn-hover-bg: var(--verde-700);
+    --bs-btn-hover-border-color: var(--verde-700);
+    --bs-btn-active-bg: var(--verde-900);
+    --bs-btn-active-border-color: var(--verde-900);
+}
+
+.bg-primary { background-color: var(--verde-700) !important; }
+.text-primary { color: var(--verde-700) !important; }
+.border-primary { border-color: var(--verde-500) !important; }
+
+/* Links */
+a { color: var(--verde-700); }
+a:hover { color: var(--verde-900); }
+
+/* Cards */
+.card {
+    border: 1px solid #e0ede5;
+    background-color: #fff;
+}
+.card-header {
+    background-color: var(--verde-100);
+    border-bottom: 1px solid #e0ede5;
+    color: var(--verde-900);
+}
+
+/* Formulários com foco verde */
+.form-control:focus, .form-select:focus {
+    border-color: var(--verde-500);
+    box-shadow: 0 0 0 .25rem rgba(64, 145, 108, .25);
+}
+
+/* Tabelas */
+.table-light {
+    --bs-table-bg: var(--verde-100);
+    --bs-table-color: var(--verde-900);
+}
+
+/* Listas */
+.list-group-item-action:hover {
+    background-color: var(--verde-50);
+}
+
+/* Badges */
+.badge.bg-verde { background-color: var(--verde-500); }
+
+/* Hero da página inicial */
+.hero-verde {
+    background: linear-gradient(135deg, var(--verde-900) 0%, var(--verde-700) 100%);
+    color: #fff;
+    border-radius: 1rem;
+}

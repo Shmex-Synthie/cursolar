@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ${topico.titulo})}">
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex align-items-center mb-4 gap-2">
+        <a th:href="@{/forum/curso/{id}(id=${topico.cursoId})}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <small class="text-muted" th:text="${topico.cursoTitulo}"></small>
+            <h2 class="mb-0" th:text="${topico.titulo}">Tópico</h2>
+        </div>
+        <form th:action="@{/forum/topico/{id}/excluir(id=${topico.id})}" method="post"
+              class="ms-auto"
+              th:if="${(session.usuario.id == topico.autorId and session.usuario.tipo == topico.autorTipo)
+                       or session.usuario.tipo == 'INSTRUTOR'}"
+              onsubmit="return confirm('Excluir este tópico e todas as respostas?')">
+            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+        </form>
+    </div>
+
+    <!-- Mensagem original -->
+    <div class="card shadow-sm mb-4 border-primary border-start border-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="fw-semibold">
+                    <i class="bi me-1"
+                       th:classappend="${topico.autorTipo == 'INSTRUTOR'} ? 'bi-person-video3' : 'bi-person-circle'"></i>
+                    <span th:text="${topico.autorNome}"></span>
+                    <span class="badge bg-verde ms-1" th:if="${topico.autorTipo == 'INSTRUTOR'}">Instrutor</span>
+                </span>
+                <small class="text-muted"
+                       th:text="${#temporals.format(topico.criadoEm, 'dd/MM/yyyy HH:mm')}"></small>
+            </div>
+            <p class="mb-0" style="white-space: pre-wrap;" th:text="${topico.conteudo}"></p>
+        </div>
+    </div>
+
+    <!-- Respostas -->
+    <h5 class="mb-3">
+        <i class="bi bi-reply-all me-1 text-primary"></i>
+        Respostas
+        <span class="badge bg-verde" th:text="${#lists.size(topico.respostas)}"></span>
+    </h5>
+
+    <div th:if="${#lists.isEmpty(topico.respostas)}" class="text-muted mb-4">
+        Nenhuma resposta ainda. Seja o primeiro a responder!
+    </div>
+
+    <div class="mb-4" th:unless="${#lists.isEmpty(topico.respostas)}">
+        <div th:each="r : ${topico.respostas}" class="card mb-2 border-0"
+             th:classappend="${r.autorTipo == 'INSTRUTOR'} ? 'bg-white border-start border-3 border-primary' : 'bg-light'">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="small fw-semibold">
+                        <i class="bi me-1"
+                           th:classappend="${r.autorTipo == 'INSTRUTOR'} ? 'bi-person-video3' : 'bi-person'"></i>
+                        <span th:text="${r.autorNome}"></span>
+                        <span class="badge bg-verde ms-1" th:if="${r.autorTipo == 'INSTRUTOR'}">Instrutor</span>
+                    </span>
+                    <small class="text-muted"
+                           th:text="${#temporals.format(r.criadoEm, 'dd/MM/yyyy HH:mm')}"></small>
+                </div>
+                <p class="mb-0 small" style="white-space: pre-wrap;" th:text="${r.conteudo}"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nova resposta -->
+    <div class="card shadow-sm">
+        <div class="card-header"><i class="bi bi-reply me-1"></i>Responder</div>
+        <div class="card-body">
+            <form th:action="@{/forum/topico/{id}/resposta/salvar(id=${topico.id})}" method="post"
+                  th:object="${novaResposta}">
+                <div class="mb-3">
+                    <textarea class="form-control" rows="3" th:field="*{conteudo}"
+                              th:classappend="${#fields.hasErrors('conteudo')} ? 'is-invalid'"
+                              placeholder="Sua resposta..."></textarea>
+                    <div class="invalid-feedback" th:errors="*{conteudo}"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send me-1"></i>Publicar Resposta
+                </button>
+            </form>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

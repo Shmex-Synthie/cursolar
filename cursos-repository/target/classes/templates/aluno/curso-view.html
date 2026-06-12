@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ${curso.titulo})}">
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex align-items-center mb-2 gap-2">
+        <a th:href="@{/aluno}" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-left"></i></a>
+        <h2 class="mb-0" th:text="${curso.titulo}">Curso</h2>
+        <a th:href="@{/forum/curso/{id}(id=${curso.id})}" class="btn btn-sm btn-outline-primary ms-auto">
+            <i class="bi bi-chat-dots me-1"></i>Fórum do Curso
+        </a>
+    </div>
+
+    <p class="text-muted mb-1" th:if="${curso.instrutorNome}">
+        <i class="bi bi-person-video3 me-1"></i>Prof. <span th:text="${curso.instrutorNome}"></span>
+        <span class="badge bg-verde ms-2" th:if="${curso.categoria}" th:text="${curso.categoria}"></span>
+        <span class="badge bg-light text-dark border ms-1" th:if="${curso.cargaHoraria != null}"
+              th:text="${curso.cargaHoraria} + 'h'"></span>
+    </p>
+    <p class="text-muted" th:if="${curso.descricao}" th:text="${curso.descricao}"></p>
+
+    <!-- Materiais gerais do curso -->
+    <div class="card shadow-sm mb-4" th:unless="${#lists.isEmpty(arquivosCurso)}">
+        <div class="card-header"><i class="bi bi-folder2-open me-1"></i>Materiais do Curso</div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="arq : ${arquivosCurso}">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi"
+                       th:classappend="${arq.tipo.name() == 'PDF'} ? 'bi-file-earmark-pdf text-danger'
+                                   : (${arq.tipo.name() == 'VIDEO'} ? 'bi-camera-video text-primary'
+                                   : (${arq.tipo.name() == 'IMAGEM'} ? 'bi-image text-primary'
+                                   : 'bi-file-earmark'))"></i>
+                    <span class="small" th:text="${arq.nome}"></span>
+                    <span class="text-muted" style="font-size:.75rem"
+                          th:text="'(' + ${#numbers.formatDecimal(arq.tamanho / 1024.0, 1, 1)} + ' KB)'"></span>
+                </div>
+                <a th:href="@{/arquivos/{id}/download(id=${arq.id})}"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-download me-1"></i>Baixar
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${#lists.isEmpty(modulos)}" class="text-center text-muted py-5">
+        <i class="bi bi-hourglass-split display-4"></i>
+        <p class="mt-2">O conteúdo deste curso ainda está sendo preparado.</p>
+    </div>
+
+    <div class="accordion mt-3" id="modulosAccordion" th:unless="${#lists.isEmpty(modulos)}">
+        <div class="accordion-item" th:each="m, stat : ${modulos}">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        th:attr="data-bs-target='#modulo' + ${m.id}"
+                        th:classappend="${!stat.first} ? 'collapsed'">
+                    <span class="badge bg-verde me-2" th:text="${m.ordem}"></span>
+                    <span th:text="${m.titulo}">Módulo</span>
+                </button>
+            </h2>
+            <div th:id="'modulo' + ${m.id}" class="accordion-collapse collapse"
+                 th:classappend="${stat.first} ? 'show'" data-bs-parent="#modulosAccordion">
+                <div class="accordion-body">
+                    <p class="text-muted" th:if="${m.descricao}" th:text="${m.descricao}"></p>
+
+                    <h6 class="text-uppercase small text-muted mt-2">
+                        <i class="bi bi-paperclip me-1"></i>Materiais
+                    </h6>
+                    <p class="text-muted small" th:if="${#lists.isEmpty(arquivosPorModulo[m.id])}">
+                        Nenhum material disponível.
+                    </p>
+                    <ul class="list-group mb-3" th:unless="${#lists.isEmpty(arquivosPorModulo[m.id])}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            th:each="arq : ${arquivosPorModulo[m.id]}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi"
+                                   th:classappend="${arq.tipo.name() == 'PDF'} ? 'bi-file-earmark-pdf text-danger'
+                                               : (${arq.tipo.name() == 'VIDEO'} ? 'bi-camera-video text-primary'
+                                               : (${arq.tipo.name() == 'IMAGEM'} ? 'bi-image text-primary'
+                                               : 'bi-file-earmark'))"></i>
+                                <span class="small" th:text="${arq.nome}"></span>
+                                <span class="text-muted" style="font-size:.75rem"
+                                      th:text="'(' + ${#numbers.formatDecimal(arq.tamanho / 1024.0, 1, 1)} + ' KB)'"></span>
+                            </div>
+                            <a th:href="@{/arquivos/{id}/download(id=${arq.id})}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-download me-1"></i>Baixar
+                            </a>
+                        </li>
+                    </ul>
+
+                    <h6 class="text-uppercase small text-muted">
+                        <i class="bi bi-pencil-square me-1"></i>Atividades
+                    </h6>
+                    <p class="text-muted small mb-0" th:if="${#lists.isEmpty(atividadesPorModulo[m.id])}">
+                        Nenhuma atividade neste módulo.
+                    </p>
+                    <ul class="list-group" th:unless="${#lists.isEmpty(atividadesPorModulo[m.id])}">
+                        <li class="list-group-item" th:each="at : ${atividadesPorModulo[m.id]}"
+                            th:with="sub=${submissoesPorAtividade[at.id]}">
+                            <div class="fw-semibold small" th:text="${at.titulo}"></div>
+                            <div class="text-muted small" th:if="${at.descricao}" th:text="${at.descricao}"></div>
+                            <span class="badge bg-verde mt-1" th:if="${at.prazo}"
+                                  th:text="'Prazo: ' + ${#temporals.format(at.prazo, 'dd/MM/yyyy')}"></span>
+
+                            <!-- Submissão já enviada -->
+                            <div class="mt-2 p-2 rounded border border-primary bg-white" th:if="${sub != null}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="small">
+                                        <i class="bi bi-check-circle-fill text-primary me-1"></i>
+                                        <strong>Enviado</strong> em
+                                        <span th:text="${#temporals.format(sub.enviadoEm, 'dd/MM/yyyy HH:mm')}"></span>
+                                        <div class="text-muted">
+                                            <i class="bi bi-file-earmark me-1"></i>
+                                            <span th:text="${sub.arquivoNome}"></span>
+                                            <span th:if="${sub.arquivoTamanho != null}"
+                                                  th:text="'(' + ${#numbers.formatDecimal(sub.arquivoTamanho / 1024.0, 1, 1)} + ' KB)'"></span>
+                                        </div>
+                                        <div class="text-muted fst-italic" th:if="${sub.comentario}"
+                                             th:text="'&quot;' + ${sub.comentario} + '&quot;'"></div>
+                                    </div>
+                                    <div class="d-flex gap-1">
+                                        <a th:if="${sub.arquivoId != null}"
+                                           th:href="@{/arquivos/{id}/download(id=${sub.arquivoId})}"
+                                           class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></a>
+                                        <form th:action="@{/aluno/submissoes/{id}/excluir(id=${sub.id})}" method="post"
+                                              onsubmit="return confirm('Remover esta submissão? Você poderá enviar outro arquivo depois.')">
+                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formulário de envio -->
+                            <form th:if="${sub == null}"
+                                  th:action="@{/aluno/atividades/{id}/submeter(id=${at.id})}"
+                                  method="post" enctype="multipart/form-data" class="mt-2">
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="file" name="arquivo" class="form-control" required>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi bi-send me-1"></i>Enviar Resposta
+                                    </button>
+                                </div>
+                                <input type="text" name="comentario" class="form-control form-control-sm"
+                                       placeholder="Comentário (opcional)" maxlength="500">
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

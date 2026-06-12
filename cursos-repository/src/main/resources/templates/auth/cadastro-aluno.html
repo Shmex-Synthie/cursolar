@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, 'Cadastro de Aluno')}">
+<body>
+<th:block th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-person display-3 text-primary"></i>
+                <h3>Cadastro de Aluno</h3>
+                <p class="text-muted">Crie sua conta para acessar os cursos</p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form th:action="@{/aluno/cadastro}" th:object="${aluno}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nome *</label>
+                            <input type="text" class="form-control" th:field="*{nome}"
+                                   th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{nome}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">E-mail *</label>
+                            <input type="email" class="form-control" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{email}"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Senha *</label>
+                            <input type="password" class="form-control" th:field="*{senha}"
+                                   th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{senha}"></div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-1"></i>Criar Conta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <p class="text-muted mb-1">
+                    Já tem conta? <a th:href="@{/aluno/login}">Entrar</a>
+                </p>
+                <a th:href="@{/}" class="text-muted small">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar à página inicial
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
