@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell($env:JAVA_HOME = \"$env:USERPROFILE\\\\.jdks\\\\openjdk-26.0.1\"; Set-Location \"C:\\\\Users\\\\Usuário\\\\Desktop\\\\Projetos Claude\\\\cursos-repository\"; & \"$env:USERPROFILE\\\\tools\\\\apache-maven-3.9.9\\\\bin\\\\mvn.cmd\" -q dependency:resolve; \"EXIT: $LASTEXITCODE\")",
-      "PowerShell($base = \"C:\\\\Users\\\\Usuário\\\\Desktop\\\\Projetos Claude\\\\cursos-repository\\\\src\\\\main\\\\java\\\\com\\\\cursosrepository\\\\controller\"; Remove-Item -Confirm:$false \"$base\\\\CursoController.java\",\"$base\\\\InstrutorController.java\",\"$base\\\\AlunoController.java\",\"$base\\\\MatriculaController.java\",\"$base\\\\ModuloController.java\",\"$base\\\\HomeController.java\"; Get-ChildItem $base | Select-Object -ExpandProperty Name)"
-    ]
-  }
-}
